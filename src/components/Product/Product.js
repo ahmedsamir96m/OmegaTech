@@ -9,18 +9,17 @@ const Product = ({ product }) => {
 
   return (
     <Card className={classes.root}>
-      <CardMedia className={classes.media} image={product.image} title={product.name}></CardMedia>
+      <CardMedia className={classes.media} image={product.image.url} title={product.name}></CardMedia>
       <CardContent>
         <div className={classes.cardContent}>
           <Typography varient="h5" gutterBottom>
             {product.name}
           </Typography>
           <Typography varient="h5">
-            {product.price}
+            {product.price.formatted_with_code}
           </Typography>
         </div>
-        <Typography varient="body2" color="textSecondary">
-          {product.description}
+        <Typography dangerouslySetInnerHTML={{__html:product.description}} varient="body2" color="textSecondary">
         </Typography>
       </CardContent>
       <CardActions disableSpacing className={classes.cardActions}>
