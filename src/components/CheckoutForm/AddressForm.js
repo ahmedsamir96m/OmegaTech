@@ -16,8 +16,10 @@ const AddressForm = ({ checkoutToken }) => {
   /* destructure the countries objects into aray of arries with key and values so it be able to map through */
   const countries = Object.entries(shippingCountries).map(([code, name]) => ({id: code, lable: name}))
   const subdivisions = Object.entries(shippingSubdivisions).map(([code, name]) => ({id: code, lable: name}))
-
-  console.log(subdivisions)
+  const options = shippingOptions.map((shippingOp) => ({
+    id: shippingOp.id,
+    label: `${shippingOp.description} - (${shippingOp.price.formatted_with_symbol})`
+  }))
 
   const fetchShippingCountries = async(checkoutTokenID) => {
     const { countries } = await commerce.services.localeListShippingCountries(checkoutTokenID);
@@ -31,7 +33,12 @@ const AddressForm = ({ checkoutToken }) => {
 
     setShippingSubdivisions(subdivisions)
     setShippingSubdivision(Object.keys(subdivisions)[0]);
-    console.log(subdivisions)
+  }
+
+  const fetchShippingOptions = async(checkoutTokenId, country, region = null) => {
+    const options = await commerce.checkout.getShippingOptions(checkoutTokenId, {country, region});
+    setShippingOptions(options)
+    setShippingOption(options[0].id)
   }
 
   useEffect(() => {
@@ -41,6 +48,10 @@ const AddressForm = ({ checkoutToken }) => {
   useEffect(() => {
     if(shippingCountry) fetchShippingSubdivisions(shippingCountry)
   }, [shippingCountry])
+
+  useEffect(() => {
+    if(shippingSubdivision) fetchShippingOptions(checkoutToken.id, shippingCountry, shippingSubdivision)
+  }, [shippingSubdivision])
 
   return (
     <div>
@@ -76,10 +87,12 @@ const AddressForm = ({ checkoutToken }) => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <InputLabel>Shipping Options</InputLabel>
-              <Select value={''} fullWidth onChange={""}>
-                <MenuItem key={0} value={""}>
-                  Select Me
-                </MenuItem>
+              <Select value={shippingOption} fullWidth onChange={(e) => {setShippingOption(e.target.value)}}>
+                {options.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.label}
+                  </MenuItem>
+                ))}
               </Select>
             </Grid>
           </Grid>
