@@ -42,7 +42,7 @@ const Checkout = ({ cart }) => {
   const Confirmation = () => {return <div>Confirmation</div>}
   const Form = () => activeStep === 0 
     ? <AddressForm checkoutToken={checkoutToken} nextCheckout={nextCheckout}/>
-    : <PaymentForm />
+    : <PaymentForm checkoutToken={checkoutToken} />
 
   return (
     <div>
